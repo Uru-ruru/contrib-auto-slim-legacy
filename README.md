@@ -1,11 +1,7 @@
-[![Releases](https://img.shields.io/badge/releases-purple)](https://github.com/opentelemetry-php/contrib-auto-slim/releases)
-[![Issues](https://img.shields.io/badge/issues-pink)](https://github.com/open-telemetry/opentelemetry-php/issues)
-[![Source](https://img.shields.io/badge/source-contrib-green)](https://github.com/open-telemetry/opentelemetry-php-contrib/tree/main/src/Instrumentation/Slim)
-[![Mirror](https://img.shields.io/badge/mirror-opentelemetry--php--contrib-blue)](https://github.com/opentelemetry-php/contrib-auto-slim)
-[![Latest Version](http://poser.pugx.org/open-telemetry/opentelemetry-auto-slim/v/unstable)](https://packagist.org/packages/open-telemetry/opentelemetry-auto-slim/)
-[![Stable](http://poser.pugx.org/open-telemetry/opentelemetry-auto-slim/v/stable)](https://packagist.org/packages/open-telemetry/opentelemetry-auto-slim/)
 
-This is a read-only subtree split of https://github.com/open-telemetry/opentelemetry-php-contrib.
+This is a fork https://github.com/opentelemetry-php/contrib-auto-slim with legacy attributes support.
+
+- `http.status_code` used as copy of `http.response.status_code`.
 
 # OpenTelemetry Slim Framework auto-instrumentation
 Please read https://opentelemetry.io/docs/instrumentation/php/automatic/ for instructions on how to

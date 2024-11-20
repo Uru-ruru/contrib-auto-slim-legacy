@@ -1,6 +1,6 @@
 {
-  "name": "open-telemetry/opentelemetry-auto-slim",
-  "description": "OpenTelemetry auto-instrumentation for Slim Framework.",
+  "name": "uru/opentelemetry-auto-slim-legacy",
+  "description": "OpenTelemetry auto-instrumentation for Slim Framework with legacy attributes support.",
   "keywords": ["opentelemetry", "otel", "open-telemetry", "tracing", "slim", "instrumentation"],
   "type": "library",
   "homepage": "https://opentelemetry.io/docs/php",
