@@ -11,6 +11,9 @@ This is a fork https://github.com/opentelemetry-php/contrib-auto-slim with legac
 - `http.target` added to attributes;
 - `http.host` added to attributes;
 
+# Installation
+Run `composer require uru/opentelemetry-auto-slim-legacy`.
+
 # OpenTelemetry Slim Framework auto-instrumentation
 Please read https://opentelemetry.io/docs/instrumentation/php/automatic/ for instructions on how to
 install and configure the extension and SDK.
