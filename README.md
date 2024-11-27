@@ -1,7 +1,15 @@
 
 This is a fork https://github.com/opentelemetry-php/contrib-auto-slim with legacy attributes support.
 
-- `http.status_code` used as copy of `http.response.status_code`.
+- `http.status_code` used as copy of `http.response.status_code`;
+- `http.url` used as copy of `url.full`;
+- `http.method` used as copy of `http.request.method`;
+- `http.user_agent` used as copy of `user_agent.original`;
+- `http.scheme` used as copy of `url.scheme`;
+- `http.request_content_length_uncompressed` used as copy of `http.request.body.size`;
+- `http.response_content_length_uncompressed` used as copy of `http.response.body.size`;
+- `http.target` added to attributes;
+- `http.host` added to attributes;
 
 # OpenTelemetry Slim Framework auto-instrumentation
 Please read https://opentelemetry.io/docs/instrumentation/php/automatic/ for instructions on how to

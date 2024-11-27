@@ -43,7 +43,14 @@ class SlimInstrumentation
         hook(
             App::class,
             'handle',
-            pre: static function (App $app, array $params, string $class, string $function, ?string $filename, ?int $lineno) use ($instrumentation) {
+            pre: static function (
+                App $app,
+                array $params,
+                string $class,
+                string $function,
+                ?string $filename,
+                ?int $lineno
+            ) use ($instrumentation) {
                 $request = ($params[0] instanceof ServerRequestInterface) ? $params[0] : null;
                 /** @psalm-suppress ArgumentTypeCoercion */
                 $builder = $instrumentation->tracer()
@@ -59,13 +66,28 @@ class SlimInstrumentation
                     $span = $builder
                         ->setParent($parent)
                         ->setAttribute(TraceAttributes::URL_FULL, $request->getUri()->__toString())
+                        ->setAttribute(TraceAttributes::HTTP_URL, $request->getUri()->__toString())
                         ->setAttribute(TraceAttributes::HTTP_REQUEST_METHOD, $request->getMethod())
-                        ->setAttribute(TraceAttributes::HTTP_REQUEST_BODY_SIZE, $request->getHeaderLine('Content-Length'))
+                        ->setAttribute(TraceAttributes::HTTP_METHOD, $request->getMethod())
+                        ->setAttribute(TraceAttributes::HTTP_HOST, $request->getHeaderLine('host'))
+                        ->setAttribute(
+                            TraceAttributes::HTTP_REQUEST_BODY_SIZE,
+                            $request->getHeaderLine('Content-Length')
+                        )->setAttribute(
+                            TraceAttributes::HTTP_REQUEST_CONTENT_LENGTH_UNCOMPRESSED,
+                            $request->getHeaderLine('Content-Length')
+                        )
                         ->setAttribute(TraceAttributes::USER_AGENT_ORIGINAL, $request->getHeaderLine('User-Agent'))
+                        ->setAttribute(TraceAttributes::HTTP_USER_AGENT, $request->getHeaderLine('User-Agent'))
                         ->setAttribute(TraceAttributes::SERVER_ADDRESS, $request->getUri()->getHost())
                         ->setAttribute(TraceAttributes::SERVER_PORT, $request->getUri()->getPort())
                         ->setAttribute(TraceAttributes::URL_SCHEME, $request->getUri()->getScheme())
+                        ->setAttribute(TraceAttributes::HTTP_SCHEME, $request->getUri()->getScheme())
                         ->setAttribute(TraceAttributes::URL_PATH, $request->getUri()->getPath())
+                        ->setAttribute(
+                            TraceAttributes::HTTP_TARGET,
+                            $request->getUri()->getPath() . $request->getUri()->getQuery()
+                        )
                         ->startSpan();
                     $request = $request->withAttribute(SpanInterface::class, $span);
                 } else {
@@ -75,7 +97,12 @@ class SlimInstrumentation
 
                 return [$request];
             },
-            post: static function (App $app, array $params, ?ResponseInterface $response, ?Throwable $exception): ?ResponseInterface {
+            post: static function (
+                App $app,
+                array $params,
+                ?ResponseInterface $response,
+                ?Throwable $exception
+            ): ?ResponseInterface {
                 $scope = Context::storage()->scope();
                 if (!$scope) {
                     return $response;
@@ -93,7 +120,14 @@ class SlimInstrumentation
                     $span->setAttribute(TraceAttributes::HTTP_RESPONSE_STATUS_CODE, $response->getStatusCode());
                     $span->setAttribute(TraceAttributes::HTTP_STATUS_CODE, $response->getStatusCode());
                     $span->setAttribute(TraceAttributes::NETWORK_PROTOCOL_VERSION, $response->getProtocolVersion());
-                    $span->setAttribute(TraceAttributes::HTTP_RESPONSE_BODY_SIZE, $response->getHeaderLine('Content-Length'));
+                    $span->setAttribute(
+                        TraceAttributes::HTTP_RESPONSE_BODY_SIZE,
+                        $response->getHeaderLine('Content-Length')
+                    );
+                    $span->setAttribute(
+                        TraceAttributes::HTTP_RESPONSE_CONTENT_LENGTH_UNCOMPRESSED,
+                        $response->getHeaderLine('Content-Length')
+                    );
 
                     if (self::$supportsResponsePropagation) {
                         // Propagate server-timing header to response, if ServerTimingPropagator is present
@@ -127,7 +161,12 @@ class SlimInstrumentation
             RoutingMiddleware::class,
             'performRouting',
             pre: null,
-            post: static function (RoutingMiddleware $middleware, array $params, ?ServerRequestInterface $request, ?Throwable $exception) {
+            post: static function (
+                RoutingMiddleware $middleware,
+                array $params,
+                ?ServerRequestInterface $request,
+                ?Throwable $exception
+            ) {
                 if ($exception || !$request) {
                     return;
                 }
@@ -152,7 +191,14 @@ class SlimInstrumentation
         hook(
             InvocationStrategyInterface::class,
             '__invoke',
-            pre: static function (InvocationStrategyInterface $strategy, array $params, string $class, string $function, ?string $filename, ?int $lineno) use ($instrumentation) {
+            pre: static function (
+                InvocationStrategyInterface $strategy,
+                array $params,
+                string $class,
+                string $function,
+                ?string $filename,
+                ?int $lineno
+            ) use ($instrumentation) {
                 $callable = $params[0];
                 $name = CallableFormatter::format($callable);
                 $builder = $instrumentation->tracer()->spanBuilder($name)
@@ -163,7 +209,12 @@ class SlimInstrumentation
                 $span = $builder->startSpan();
                 Context::storage()->attach($span->storeInContext(Context::getCurrent()));
             },
-            post: static function (InvocationStrategyInterface $strategy, array $params, ?ResponseInterface $response, ?Throwable $exception) {
+            post: static function (
+                InvocationStrategyInterface $strategy,
+                array $params,
+                ?ResponseInterface $response,
+                ?Throwable $exception
+            ) {
                 $scope = Context::storage()->scope();
                 if (!$scope) {
                     return;
