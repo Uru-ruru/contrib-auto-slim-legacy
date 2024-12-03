@@ -86,7 +86,10 @@ class SlimInstrumentation
                         ->setAttribute(TraceAttributes::URL_PATH, $request->getUri()->getPath())
                         ->setAttribute(
                             TraceAttributes::HTTP_TARGET,
-                            $request->getUri()->getPath() . $request->getUri()->getQuery()
+                            implode('?', [
+                                $request->getUri()->getPath(),
+                                $request->getUri()->getQuery(),
+                            ])
                         )
                         ->startSpan();
                     $request = $request->withAttribute(SpanInterface::class, $span);
